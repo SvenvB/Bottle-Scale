@@ -19,6 +19,9 @@ Bottle scale for timing and weighing baby food. The scale is integrated with the
 ## Electrical Connections
 * The ESP8266 is getting power from the Vin + GND pins via a USB cable that has a soldered 2x1 female pin header to connect to those pins. Using the USB-C connection on the board is not possible because the space is blocked by the push buttons. 
 
+<img src="https://github.com/SvenvB/Bottle-Scale/blob/main/Schematic/Schematic_bb.png" width="400">
+<img src="https://github.com/SvenvB/Bottle-Scale/blob/main/Schematic/Schematic_BottleScale.pdf" width="400">
+
 ## CAD Modeling
 
 * The screen location might differ since the screen is manually attached to the board using double-sided tape. Therefore you might need to adjust the CAD model based on your EPS8266.

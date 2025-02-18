@@ -6,7 +6,7 @@ Bottle scale for timing and weighing baby food. The scale is integrated with the
 * The keypad automation is integrated with the NodeRED BabyBuddy project of [tango259](https://github.com/tango2590/baby-buddy)
 
 
-<img src="https://github.com/SvenvB/Bottle-Scale/blob/main/Photos/Bottlephoto.jpg" width="500">
+<img src="https://github.com/SvenvB/Bottle-Scale/blob/main/Photos/IMG-20250217-WA0000.jpg" width="500">
 
 
 ## Electrical Connections

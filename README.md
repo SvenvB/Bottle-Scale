@@ -47,7 +47,7 @@ Bottle scale for timing and weighing baby food. The scale is integrated with the
 
 
 ## ESPHome and Automation
-I won't go into much detail here, as this can be integrated however you like. I integrated the automation directly with the NodeRED BabyBuddy project of [tango259](https://github.com/tango2590/baby-buddy).
+I won't go into much detail here, as this can be integrated however you like and I assume that you already have set up BabyBuddy in HomeAssistant. I integrated the automation directly with the NodeRED BabyBuddy project of [tango259](https://github.com/tango2590/baby-buddy).
 
 Attached you can find my [ESPHome code](https://github.com/SvenvB/Bottle-Scale/blob/main/esphome_code.yaml) for the device. The microcontroller receives one sensor and two text_sensors from the home assistant front-end:
 * *input_number.bottle_scale_calibration_value*: which is the measured weight when pushing the start button on the left-hand-side. It then subtracts this calibration value from the measured value so that when you put the empty bottle on the scale to stop recording, you can directly see how much the baby ate.

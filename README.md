@@ -2,8 +2,8 @@
 Bottle scale for timing and weighing baby food. The scale is integrated with the Baby Buddy integration in Home Assistant.
 
 * The scale design is inspired by the great work from [sfgabe:](https://github.com/sfgabe/OITProjects/tree/master/BabyBuddy_ESP_HASS), but since I am by far not a woodworking expert, I designed a similar casing in FreeCAD that can be 3D printed. Attached are the files.
-* The keypad is connected to HomeAssistant via [ESPHome](https://www.home-assistant.io/integrations/esphome/)
-* The keypad automation is integrated with the NodeRED BabyBuddy project of [tango259](https://github.com/tango2590/baby-buddy)
+* The scale is connected to HomeAssistant via [ESPHome](https://www.home-assistant.io/integrations/esphome/)
+* The scale automation is integrated with the NodeRED BabyBuddy project of [tango259](https://github.com/tango2590/baby-buddy)
 
 
 <img src="https://github.com/SvenvB/Bottle-Scale/blob/main/Photos/scale_with_bottle.jpg" width="400">

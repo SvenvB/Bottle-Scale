@@ -1,0 +1,183 @@
+esphome:
+  name: bottle-scale
+  friendly_name: Bottle Scale
+
+esp8266:
+  board: nodemcuv2
+
+# Enable logging
+logger:
+  level: DEBUG  # Keep debug for other components
+  logs:
+    hx711: WARN  # Suppress detailed HX711 messages
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: YOURAPIKEY
+
+ota:
+  - platform: esphome
+    password: YOUROTAPASS
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Bottle-Scale Fallback Hotspot"
+    password: PASS
+
+captive_portal:
+
+# Status LEDs
+switch:
+  - platform: gpio
+    pin: D2
+    name: "Bottle scale status LED - Green"
+    id: LED_green
+  - platform: gpio
+    pin: D4
+    name: "Bottle scale status LED - Yellow"
+    id: LED_yellow
+  - platform: gpio
+    pin: D3
+    name: "Bottle scale status LED - White"
+    id: LED_white        
+
+# Font definitions
+font:
+  - file: "gfonts://Roboto"
+    id: title_font
+    size: 11
+  - file: "gfonts://Roboto"
+    id: meas_font
+    size: 25
+  - file: "gfonts://Roboto"
+    id: time_font
+    size: 15    
+# I2C Configuration for HW364A OLED
+i2c:
+  sda: D5
+  scl: D6
+  scan: true # Enable to detect I2C devices
+  frequency: 400kHz
+
+# OLED Display Configuration
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128X64"
+    address: 0x3C
+    id: hw364a_display
+    pages:
+      - id: page1
+        lambda: |-
+          // Print "Gingerbread Technology" on the first line, centered
+          const char *title = "Gingerbread Technology";
+          int title_width = strlen(title) * 5.5;  // Estimate character width (adjust if needed)
+          int title_x = (128 - title_width) / 2;  // Center horizontally
+          it.print(title_x, 0, id(title_font), title);
+
+          // Get and round the weight value
+          if (id(bottle_scale_cal_value).has_state()) {
+              float cal_value = id(bottle_scale_cal_value).state;  // Get calibration value
+              int weight = abs(round(id(bottle_scale_sensor).state - cal_value));
+              char buffer[10];
+              sprintf(buffer, "%d g", weight);  // Format weight as "123 g"
+
+              // Print weight value on the left side
+              it.print(0, 12, id(meas_font), buffer);
+          }
+
+          // Draw a vertical centerline (2-pixel width)
+          int x_center = 128 / 2;
+          it.line(x_center, 20, x_center, 40);
+          it.line(x_center + 1, 20, x_center + 1, 40);
+
+          // Print stopwatch time on the right-hand side
+          if (id(stopwatch_sensor).has_state()) {
+              std::string stopwatch_time = id(stopwatch_sensor).state;
+
+              // Find the '.' character (milliseconds separator)
+              size_t dot_position = stopwatch_time.find('.');
+
+              // If milliseconds exist, remove them by truncating the string
+              if (dot_position != std::string::npos) {
+                  stopwatch_time = stopwatch_time.substr(0, dot_position);
+              }
+
+              // Estimate text width based on characters (adjust as needed)
+              int text_width = stopwatch_time.length() * 7.0;
+              int text_x = 128 - text_width - 2;  // Align to the right side
+
+              it.print(text_x, 20, id(time_font), stopwatch_time.c_str());
+          }
+
+
+          // Print calibration status below the timer
+          if (id(bottle_scale_status).has_state()) {
+            std::string bottle_scale_cal_status = id(bottle_scale_status).state;
+
+            // Estimate text width based on characters (adjust as needed)
+            int text_width = bottle_scale_cal_status.length() * 6.5;
+            int text_x = (128 - text_width) / 2;  // Align in the center
+
+            it.print(text_x, 45, id(time_font), bottle_scale_cal_status.c_str());
+          }          
+       
+
+
+
+sensor:
+  - platform: hx711     # HX711 24-bit ADC for weight scale
+    name: "Bottle Scale sensor"
+    id: bottle_scale_sensor 
+    dout_pin: D0
+    clk_pin: D1
+    gain: 128
+    update_interval: 0.2s
+    device_class: weight
+    state_class: "measurement"
+    unit_of_measurement: g
+    accuracy_decimals: 0
+    icon: mdi:weight-gram
+    filters:
+      - calibrate_linear:
+        - 65000 -> 0
+        - 557688 -> 784
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 5        
+  - platform: homeassistant   #  Calibration value
+    id: bottle_scale_cal_value
+    entity_id: input_number.bottle_scale_calibration_value
+
+# Import the stopwatch from home assistant as text sensor
+text_sensor:
+  - platform: homeassistant
+    id: stopwatch_sensor
+    entity_id: sensor.stopwatch  
+  - platform: homeassistant
+    id: bottle_scale_status
+    entity_id: input_text.bottle_scale_status  
+
+
+
+binary_sensor:
+#Key 1
+  - platform: gpio
+    icon: "mdi:clock-start"
+    name: "Bottle scale calibrate and start"
+    pin:
+      number: D8
+      inverted: False
+      mode: INPUT                 
+#Key 2
+  - platform: gpio
+    icon: "mdi:stop-circle-outline"
+    name: "Bottle scale stop and record"
+    pin:
+      number: D7
+      inverted: true
+      mode: INPUT_PULLUP     

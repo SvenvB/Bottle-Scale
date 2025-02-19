@@ -33,12 +33,27 @@ Bottle scale for timing and weighing baby food. The scale is integrated with the
 * The scale is designed in freeware [FreeCAD](https://www.freecad.org/). Uploaded are the step files but also the FreeCAD project so you can make any changes desired:
 
 **Important notes:**
-* The screen location might differ since the screen is manually attached to the board using double-sided tape. Therefore you might need to adjust the CAD model based on your EPS8266.
-* Similarly the mounting holes in the plastic plates of the bottle scale seem to be manually drilled. This also might warrant some manual changes in the CAD model so that your scale fits.
-* The electronics compartment is quite compact. You will want to remove any excessive wire length otherwise it won't fit.
+* The screen location might differ since the screen is manually attached to the board using double-sided tape. Therefore you might need to adjust the CAD model based on your screen location.
+* Similarly the mounting holes in the plastic plates of the bottle scale seem to be manually drilled. This also might warrant some manual changes in the CAD model so that your scale fits. The hole in the top plate is a tight fit.
+* The electronics compartment is also quite compact. You will want to remove any excessive wire length otherwise it won't fit.
 * The top plate and computer plate are not screwed down but glued using a glue pistol. If you don't have a glue pistol or strong double-sided tape, you might want to add some screw holes in the design.   
 
+<img src="https://github.com/SvenvB/Bottle-Scale/blob/main/Photos/electronics_box1.jpg" width="400">
+<img src="https://github.com/SvenvB/Bottle-Scale/blob/main/Photos/electronics_box2.jpg" width="400">
 
-## Coding
+* The buttons are printed on a 4x6" photo at the local CVS store:
 
-* The weight measurement can easily be calibrated in ESPhome using zero load and a known load. 
+<img src="https://github.com/SvenvB/Bottle-Scale/blob/main/FreeCAD/buttonsticker/buttons_bottlescale.png" width="400">
+
+
+## ESPHome and Automation
+I won't go into much detail here, as this can be integrated however you like. I integrated the automation directly with the NodeRED BabyBuddy project of [tango259](https://github.com/tango2590/baby-buddy).
+
+Attached you can find my [ESPHome code](https://github.com/SvenvB/Bottle-Scale/blob/main/esphome_code.yaml) for the device. The microcontroller receives one sensor and two text_sensors from the home assistant front-end:
+* *input_number.bottle_scale_calibration_value*: which is the measured weight when pushing the start button on the left-hand-side. It then subtracts this calibration value from the measured value so that when you put the empty bottle on the scale to stop recording, you can directly see how much the baby ate.
+* *sensor.stopwatch*: is the [stopwatch](https://community.home-assistant.io/t/stopwatch-with-start-stop-resume-lap-and-reset/443994) used in the NodeRED BabyBuddy project of [tango259](https://github.com/tango2590/baby-buddy). The stopwatch value is also shown on the screen.
+* *input_text.bottle_scale_status*: is a text label on the bottom of the screen that either says *<-- Start feeding*, *Stop feeding-->*, or *Feeding recorded!*.
+
+Don't forget to [calibrate](https://esphome.io/components/sensor/hx711.html) your scale in ESPhome code by removing my calibration and then find the sensor readings when using zero load and a known weight. 
+
+Happy feeding!
